@@ -1,4 +1,4 @@
-export default function LeftButton() {
+export default function LoginHeader() {
     return (
         <>
         
