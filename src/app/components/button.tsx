@@ -8,6 +8,7 @@ type Props = {
     text: string;
     bgColor: keyof typeof ButtonBgColorVariants;
     textColor: keyof typeof ButtonTextColorVariants;
+    icon?: React.ReactNode;
 }
 
 const ButtonBgColorVariants = {
@@ -22,8 +23,11 @@ const ButtonTextColorVariants = {
     black: "text-black"
 }
 
-export default function Button({ handleOnClick, text, bgColor, textColor }: Props) {
+export default function Button({ handleOnClick, text, bgColor, textColor, icon }: Props) {
     return (
-        <button onClick={handleOnClick} type="submit" className={`w-full h-10 rounded-sm font-medium ${ButtonBgColorVariants[bgColor]} ${ButtonTextColorVariants[textColor]}`}>{text}</button> 
+        <button onClick={handleOnClick} type="submit" className={`w-full h-10 rounded-sm font-medium flex items-center justify-center gap-4 ${ButtonBgColorVariants[bgColor]} ${ButtonTextColorVariants[textColor]}`}>
+            {icon}
+            {text}
+        </button> 
     )
 }
