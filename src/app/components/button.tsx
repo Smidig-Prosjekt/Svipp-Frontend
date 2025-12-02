@@ -1,6 +1,6 @@
 /* 
     How to use: 
-    <Button handleOnClick={handleSubmit} text='Button' bgColor='Primary' textColor='white' />
+    <Button handleOnClick={handleSubmit} text='Fortsett med Google' bgColor='Primary' textColor='white' icon={<GoogleIcon />} />
 */
 
 type Props = {
@@ -14,18 +14,18 @@ type Props = {
 const ButtonBgColorVariants = {
     Primary: "bg-[#3b9afb]",
     Danger: "bg-[#ea4335]",
-    dark: "bg-[#000000]",
-    light: "bg-[#ffffff]"
+    Dark: "bg-[#000000]",
+    Light: "bg-[#ffffff]"
 }
 
 const ButtonTextColorVariants = {
-    white: "text-white",
-    black: "text-black"
+    White: "text-white",
+    Black: "text-black"
 }
 
 export default function Button({ handleOnClick, text, bgColor, textColor, icon }: Props) {
     return (
-        <button onClick={handleOnClick} type="submit" className={`w-full h-10 rounded-sm font-medium flex items-center justify-center gap-4 ${ButtonBgColorVariants[bgColor]} ${ButtonTextColorVariants[textColor]}`}>
+        <button onClick={handleOnClick} type="submit" className={`w-full h-10 border border-gray-400 rounded-sm font-medium flex items-center justify-center gap-4 ${ButtonBgColorVariants[bgColor]} ${ButtonTextColorVariants[textColor]}`}>
             {icon}
             {text}
         </button> 
