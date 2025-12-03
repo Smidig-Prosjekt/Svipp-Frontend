@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BottomNavbar from "./components/bottomNavbar";
 
 export default function OpeningPage() {
   return (
