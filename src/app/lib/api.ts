@@ -24,10 +24,8 @@ export async function loginRequest(email: string, password: string) {
 
   const data = await handleResponse<{ token?: string }>(res);
 
-  if (typeof window !== "undefined" && data.token) {
-    localStorage.setItem("token", data.token);
-  }
-
+  // The server should set an HttpOnly cookie with the token.
+  // Do not store authentication tokens in localStorage.
   return data;
 }
 
