@@ -78,7 +78,7 @@ export default function LoginPage() {
 
         <p className="mt-4 text-center text-sm text-gray-700">
           Ingen konto?{" "}
-          <Link href="/user" className="text-blue-700 underline">
+          <Link href="/register" className="text-blue-700 underline">
             Registrer deg
           </Link>
         </p>
