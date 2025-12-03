@@ -1,10 +1,88 @@
+import Image from "next/image";
+import Link from "next/link";
 import BottomNavbar from "../components/bottomNavbar";
+import Button from "../components/button";
+
+type CarouselItem = {
+  src: string;
+  label: string;
+};
+
+const carouselItems: CarouselItem[] = [
+  { src: "/carusel1.png", label: "Miljøvennlig" },
+  { src: "/carusel2.png", label: "Trygt" },
+  { src: "/carusel3.png", label: "Lovlig" },
+];
+
+function CarouselCard({ src, label }: CarouselItem) {
+  return (
+    <div className="relative w-64 h-40 rounded-xl overflow-hidden flex-shrink-0">
+      <Image src={src} alt={label} fill className="object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+      <span className="absolute bottom-4 left-4 text-white text-2xl font-bold">
+        {label}
+      </span>
+    </div>
+  );
+}
 
 export default function UserPage() {
-    return(
-        <>
-            <h1>Velkommen til hjemmesiden!</h1>
-            <BottomNavbar />
-        </>
-    )
+  return (
+    <div className="min-h-screen flex flex-col bg-black">
+      {/* Hovedinnhold */}
+      <section className="relative h-[70vh] w-full">
+        <Image
+          src="/landing.png"
+          alt="Svipp bakgrunn"
+          fill
+          priority
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+
+        <div className="relative z-10 flex flex-col justify-between h-full px-6 pt-10 pb-12">
+          <div className="flex justify-center">
+            <Image
+              src="/svipp.svg"
+              alt="Svipp logo"
+              width={160}
+              height={40}
+            />
+          </div>
+
+          <div className="flex flex-col items-center text-center gap-4 px-2">
+            <h1 className="text-white text-3xl md:text-4xl font-bold leading-tight max-w-md mx-auto">
+              Vi kjører deg og bilen hjem
+            </h1>
+
+            <p className="text-white/90 text-sm md:text-base max-w-md mx-auto">
+              Svipp er løsningen når du har tatt bil til fest og ikke kan kjøre
+              selv. En godkjent sjåfør kjører deg og bilen trygt hjem.
+            </p>
+
+            <div className="mt-4 w-full max-w-xs">
+              <Link href="/user/order">
+                <Button
+                  text="Bestill sjåfør"
+                  bgColor="Primary"
+                  textColor="White"
+                />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Bilde-karusell */}
+      <section className="bg-white pt-4 pb-20 px-4">
+        <div className="flex gap-4 overflow-x-auto">
+          {carouselItems.map((item) => (
+            <CarouselCard key={item.label} src={item.src} label={item.label} />
+          ))}
+        </div>
+      </section>
+
+      <BottomNavbar />
+    </div>
+  );
 }
