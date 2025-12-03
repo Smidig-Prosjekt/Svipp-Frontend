@@ -25,7 +25,7 @@ export default function LoginPage() {
                 <Button handleOnClick={() => console.log('Logging in with google...')} text='Logg inn med Google' bgColor='Light' textColor='Black' icon={<GoogleIcon />}></Button>
 
                 <p className="mt-8 text-center text-sm text-gray-700">Ingen konto?{" "}
-                    <Link href="/user" className="text-blue-700 underline">Registrer deg</Link>
+                    <Link href="/register" className="text-blue-700 underline">Registrer deg</Link>
                 </p>
             </div>
         </div>
