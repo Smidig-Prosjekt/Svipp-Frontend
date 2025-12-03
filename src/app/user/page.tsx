@@ -34,8 +34,8 @@ export default function NewUserAccountPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#3b9afb] to-[#e6f3ff]">
-      <div className="w-full max-w-sm bg-transparent px-6 py-10">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-blue-400 to-slate-50">
+      <div className="w-full max-w-sm bg-transparent">
         <div className="mb-8">
           <LeftArrowIconButton />
         </div>
@@ -125,7 +125,7 @@ export default function NewUserAccountPage() {
               handleOnClick={() => {}}
               text="Opprett brukerkonto"
               bgColor="Primary"
-              textColor="white"
+              textColor="White"
             />
           </div>
 
@@ -133,8 +133,8 @@ export default function NewUserAccountPage() {
             <Button
               handleOnClick={() => {}}
               text="Fortsett med Google"
-              bgColor="light"
-              textColor="black"
+              bgColor="Light"
+              textColor="Black"
               icon={<GoogleIcon />}
             />
           </div>
