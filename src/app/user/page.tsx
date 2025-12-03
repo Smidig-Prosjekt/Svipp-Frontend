@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import BottomNavbar from "../components/bottomNavbar";
 import Button from "../components/button";
+import TopNavbar from "../components/topNavbar";
 
 type CarouselItem = {
   src: string;
@@ -28,7 +29,10 @@ function CarouselCard({ src, label }: CarouselItem) {
 
 export default function UserPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-black">
+    <div className="min-h-screen flex flex-col bg-black md:pt-16">
+
+      <TopNavbar />
+      
       {/* Hovedinnhold */}
       <section className="relative h-[70vh] w-full">
         <Image
@@ -39,6 +43,8 @@ export default function UserPage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-black/40" />
+
+        
 
         <div className="relative z-10 flex flex-col justify-between h-full px-6 pt-10 pb-12">
           <div className="flex justify-center">
@@ -75,7 +81,7 @@ export default function UserPage() {
 
       {/* Bilde-karusell */}
       <section className="bg-white pt-4 pb-20 px-4">
-        <div className="flex gap-4 overflow-x-auto">
+        <div className="flex gap-8 overflow-x-auto md:justify-center">
           {carouselItems.map((item) => (
             <CarouselCard key={item.label} src={item.src} label={item.label} />
           ))}
