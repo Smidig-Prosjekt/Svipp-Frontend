@@ -29,4 +29,28 @@ export async function loginRequest(email: string, password: string) {
   return data;
 }
 
+export async function registerRequest(
+  firstName: string,
+  lastName: string,
+  email: string,
+  phoneNumber: string,
+  password: string
+) {
+  const res = await fetch(`${API_URL}/api/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      password,
+    }),
+  });
+
+  return handleResponse<{ token?: string }>(res);
+}
+
 

@@ -11,26 +11,41 @@ import InputField from "../components/inputField";
 import LeftArrowIconButton from "../components/leftArrowIconButton";
 import GoogleIcon from "../icons/googleIcon";
 import Link from "next/link";
+import { registerRequest } from "../lib/api";
+import { useRouter } from "next/navigation";
 
 export default function NewUserAccountPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implementer opprett bruker-logikk
-    console.log({
-      firstName,
-      lastName,
-      email,
-      password,
-      confirmPassword,
-    });
+    setError(null);
+
+    if (password !== confirmPassword) {
+      setError("Passordene matcher ikke");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await registerRequest(firstName, lastName, email, phoneNumber, password);
+      router.push("/login");
+    } catch (err: any) {
+      setError(err.message ?? "Registrering feilet");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,9 +55,13 @@ export default function NewUserAccountPage() {
           <LeftArrowIconButton />
         </div>
 
-        <h1 className="text-2xl font-semibold text-center text-black mb-8">
+        <h1 className="text-2xl font-semibold text-center text-black mb-4">
           Ny brukerkonto
         </h1>
+
+        {error && (
+          <p className="mb-4 text-center text-sm text-red-600">{error}</p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-4">
@@ -78,6 +97,17 @@ export default function NewUserAccountPage() {
               required
             />
           </div>
+
+      <div>
+        <InputField
+          title="Telefonnummer"
+          type="tel"
+          placeholder="+47 123 45 678"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          required
+        />
+      </div>
 
           <div className="space-y-1">
             <div className="relative">
@@ -123,9 +153,10 @@ export default function NewUserAccountPage() {
           <div className="pt-2">
             <Button
               handleOnClick={() => {}}
-              text="Opprett brukerkonto"
+              text={loading ? "Oppretter..." : "Opprett brukerkonto"}
               bgColor="Primary"
               textColor="White"
+              disabled={loading}
             />
           </div>
 
