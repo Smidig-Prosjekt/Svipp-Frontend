@@ -3,8 +3,10 @@
     <Button handleOnClick={handleSubmit} text='Fortsett med Google' bgColor='Primary' textColor='white' icon={<GoogleIcon />} />
 */
 
+"use client";
+
 type Props = {
-    handleOnClick: () => void;
+    handleOnClick?: () => void;
     text: string;
     bgColor: keyof typeof ButtonBgColorVariants;
     textColor: keyof typeof ButtonTextColorVariants;
