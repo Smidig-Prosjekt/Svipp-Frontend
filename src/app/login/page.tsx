@@ -35,27 +35,28 @@ export default function LoginPage() {
 
   return (
     <div className="h-screen flex justify-center bg-linear-to-b from-blue-400 to-slate-50">
-      <div className="w-full flex flex-col justify-center items-center gap-8 max-w-sm">
+      <div className="w-full flex flex-col justify-center items-center gap-4 max-w-sm">
         <img src="/svipp.svg" alt="svipp logo" className="w-64 h-24" />
 
         {error && (
-          <p className="text-sm text-red-600 text-center px-2">{error}</p>
+          <p className="text-red-600 text-sm text-center max-w-xs">{error}</p>
         )}
 
         <InputField
           title="E-post"
-          onChange={(e) => setEmail(e.target.value)}
           type="email"
           required
           value={email}
-          placeholder="Skriv inn epost"
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Skriv inn e-post"
         />
+
         <InputField
           title="Passord"
-          onChange={(e) => setPassword(e.target.value)}
           type="password"
           required
           value={password}
+          onChange={(e) => setPassword(e.target.value)}
           placeholder="********"
         />
 
@@ -64,6 +65,7 @@ export default function LoginPage() {
           text={loading ? "Logger inn..." : "Logg inn"}
           bgColor="Primary"
           textColor="White"
+          disabled={loading}
         />
 
         <Button
@@ -74,7 +76,7 @@ export default function LoginPage() {
           icon={<GoogleIcon />}
         />
 
-        <p className="mt-8 text-center text-sm text-gray-700">
+        <p className="mt-4 text-center text-sm text-gray-700">
           Ingen konto?{" "}
           <Link href="/user" className="text-blue-700 underline">
             Registrer deg
