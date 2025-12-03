@@ -19,13 +19,13 @@ export async function loginRequest(email: string, password: string) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Include cookies in requests
     body: JSON.stringify({ email, password }),
   });
 
   const data = await handleResponse<{ token?: string }>(res);
 
-  // The server should set an HttpOnly cookie with the token.
-  // Do not store authentication tokens in localStorage.
+  // The server sets an HttpOnly cookie with the token.
   return data;
 }
 
@@ -41,6 +41,7 @@ export async function registerRequest(
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Include cookies in requests
     body: JSON.stringify({
       firstName,
       lastName,
