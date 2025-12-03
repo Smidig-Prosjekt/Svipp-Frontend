@@ -18,7 +18,14 @@ export default function InputField({ title, onChange, type, required, value, pla
     return (
         <div className="w-full">
             <h1 className="font-medium">{title}</h1>
-            <input onChange={onChange} type={type} required={required} value={value} placeholder={placeholder} className="w-full h-10 border border-gray-400 rounded-sm font-medium pl-4"></input>
+            <input
+                onChange={onChange}
+                type={type}
+                required={required}
+                value={value}
+                placeholder={placeholder}
+                className="w-full h-10 border border-gray-400 rounded-sm font-medium pl-4 bg-white"
+            />
         </div>
     )
 }
