@@ -32,6 +32,14 @@ export default function NewUserAccountPage() {
     e.preventDefault();
     setError(null);
 
+    const trimmedPhone = phoneNumber.trim();
+    const phoneIsValid = /^\+?\d{8,15}$/.test(trimmedPhone);
+
+    if (!phoneIsValid) {
+      setError("Nummer må være på rett format");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Passordene matcher ikke");
       return;
