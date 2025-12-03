@@ -1,8 +1,36 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## Kom i gang lokalt
 
-First, run the development server:
+### Forutsetninger
+
+- Node.js (versjon 18+ anbefalt)
+- `npm` (følger med Node)
+- Svipp API kjørende lokalt på `http://localhost:5087` (se API‑README for hvordan du starter backend)
+
+Frontend er satt opp til å proxye alle kall til `/api/*` videre til backend via `next.config.ts`:
+
+```ts
+// next.config.ts
+rewrites() {
+  return [
+    {
+      source: "/api/:path*",
+      destination: "http://localhost:5087/api/:path*",
+    },
+  ];
+}
+```
+
+### 1. Installer avhengigheter
+
+I rotmappen til `Svipp-Frontend`:
+
+```bash
+npm install
+```
+
+### 2. Start utviklingsserveren
 
 ```bash
 npm run dev
@@ -14,7 +42,12 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Deretter åpner du `http://localhost:3000` i nettleseren.
+
+- `http://localhost:3000/login` – logg inn
+- `http://localhost:3000/register` – registrer ny bruker
+
+Husk at backend må kjøre for at innlogging/registrering skal fungere.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
