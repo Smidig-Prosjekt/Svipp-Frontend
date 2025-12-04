@@ -21,12 +21,12 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect") || "/user";
-  // Validate it's a relative path and not protocol-relative or absolute
+  // Validate it's a relative path: starts with /, not protocol-relative (//), and no protocol scheme
   const isValidRedirect =
     typeof redirectParam === "string" &&
     redirectParam.startsWith("/") &&
     !redirectParam.startsWith("//") &&
-    !/^\/?(?:[a-zA-Z][a-zA-Z\d+\-.]*:)/.test(redirectParam); // no protocol
+    !redirectParam.includes("://");
   const redirectPath = isValidRedirect ? redirectParam : "/user";
   const registerHref = redirectPath
     ? `/register?redirect=${encodeURIComponent(redirectPath)}`

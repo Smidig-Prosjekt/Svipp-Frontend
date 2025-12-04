@@ -3,8 +3,13 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 async function validateSessionToken(token: string): Promise<boolean> {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    console.error("JWT_SECRET is not configured");
+    return false;
+  }
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || "");
+    const secret = new TextEncoder().encode(jwtSecret);
     await jwtVerify(token, secret);
     return true;
   } catch {
