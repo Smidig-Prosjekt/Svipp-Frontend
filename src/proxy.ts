@@ -30,12 +30,12 @@ async function validateSession(
 
     return response.ok;
   } catch (error) {
-    console.error("Session validation error in middleware:", error);
+    console.error("Session validation error in proxy:", error);
     return false;
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionToken = request.cookies.get("session_token")?.value;
 
