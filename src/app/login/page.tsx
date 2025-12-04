@@ -19,12 +19,13 @@ export default function LoginPage() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/user";
+  const redirectParam = searchParams.get("redirect") || "/user";
+  const redirect = redirectParam.startsWith("/") && !redirectParam.startsWith("//")
+    ? redirectParam
+    : "/user";
 
-  const handleLogin = async (e?: React.FormEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError(null);
     setLoading(true);
 
@@ -67,11 +68,11 @@ export default function LoginPage() {
           />
 
           <Button
-            handleOnClick={handleLogin}
             text={loading ? "Logger inn..." : "Logg inn"}
             bgColor="Primary"
             textColor="White"
             disabled={loading}
+            type="submit"
           />
         </form>
 
@@ -81,6 +82,7 @@ export default function LoginPage() {
           bgColor="Light"
           textColor="Black"
           icon={<GoogleIcon />}
+          type="button"
         />
 
         <p className="mt-4 text-center text-sm text-gray-700">

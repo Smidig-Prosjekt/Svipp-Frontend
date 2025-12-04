@@ -32,8 +32,31 @@ export default async function UserPage() {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get("session_token");
 
-  // Hvis session_token mangler, vis innloggingsside
-  if (!sessionToken) {
+  // Validate session token with backend
+  let isValidSession = false;
+  if (sessionToken) {
+    try {
+      const res = await fetch(`${process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || ""}/api/auth/validate-session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ sessionToken: sessionToken.value }),
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        isValidSession = data.valid === true;
+      }
+    } catch (error) {
+      // If validation fails or API is unavailable, we still reject access for security
+      console.error('Session validation failed:', error);
+      isValidSession = false;
+    }
+  }
+
+  // Hvis session_token mangler eller er ugyldig, vis innloggingsside
+  if (!sessionToken || !isValidSession) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-6 px-6">
