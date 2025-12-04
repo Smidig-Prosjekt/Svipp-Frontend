@@ -31,7 +31,7 @@ function CarouselCard({ src, label }: CarouselItem) {
 }
 
 export default function UserPage() {
-  const { user, isLoading } = useAuthSession();
+  const { user, isLoading, error, retrySession } = useAuthSession();
 
   // Vis loading mens vi henter brukerdata (middleware har allerede validert autentisering)
   if (isLoading) {
@@ -42,13 +42,19 @@ export default function UserPage() {
     );
   }
 
-  // Middleware har allerede sikret at brukeren er autentisert
-  // Men hvis user-data ikke er lastet ennå, vis loading
-  // (Dette skjer hvis sessionRequest feiler, men middleware har validert token)
-  if (!user) {
+  // Hvis det oppstod en feil ved henting av brukerdata, vis feilmelding med retry
+  if (error || !user) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
-        <div className="text-gray-600">Laster brukerdata...</div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
+        <div className="flex flex-col items-center gap-4 max-w-md text-center">
+          <p className="text-red-600 text-sm">{error || "Kunne ikke hente brukerdata"}</p>
+          <button
+            onClick={retrySession}
+            className="px-6 py-3 bg-[#3b9afb] text-white rounded-sm font-medium hover:bg-[#2a8aeb] transition-colors"
+          >
+            Prøv igjen
+          </button>
+        </div>
       </div>
     );
   }
