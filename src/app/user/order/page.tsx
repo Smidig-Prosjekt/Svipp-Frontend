@@ -1,8 +1,8 @@
 "use client";
 
-import BottomNavbar from "@/app/components/bottomNavbar";
-import Map from "@/app/components/Map";
-import TopNavbar from "@/app/components/topNavbar";
+import BottomNavbar from "../../components/bottomNavbar";
+import Map from "../../components/map";
+import TopNavbar from "../../components/topNavbar";
 
 export default function OrderPage() {
   return (
