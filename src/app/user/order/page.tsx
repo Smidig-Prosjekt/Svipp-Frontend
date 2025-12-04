@@ -18,12 +18,10 @@ export default function OrderPage() {
 
         <section className="p-4 bg-white shadow-md border-t border-gray-200">
           <h1 className="text-lg font-semibold mb-1">
-            Velg posisjon for henting
+            Velg sjåfør
           </h1>
           <p className="text-sm text-gray-600">
-            Kartet viser nåværende posisjon som utgangspunkt (hentet via
-            nettleser/Google Maps API). Denne siden skal senere kobles mot
-            backend for å hente og vise tilgjengelige sjåfører.
+            Klikk på en sjåfør (rød markør) for å se detaljer og bestille.
           </p>
         </section>
       </main>
