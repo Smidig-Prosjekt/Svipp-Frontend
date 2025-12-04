@@ -26,7 +26,10 @@ export default function NewUserAccountPage() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirect");
+  const redirectParam = searchParams.get("redirect");
+  // Validate it's a relative path
+  const isValidRedirect = redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//");
+  const redirectPath = isValidRedirect ? redirectParam : null;
   const loginHref = redirectPath
     ? `/login?redirect=${encodeURIComponent(redirectPath)}`
     : "/login";
@@ -168,7 +171,10 @@ export default function NewUserAccountPage() {
           <div>
             <Button
               type="button"
-              handleOnClick={() => console.log("Fortsetter med Google...")}
+              handleOnClick={() => {
+                // TODO: Implement Google OAuth
+                console.log("Google OAuth not yet implemented");
+              }}
               text="Fortsett med Google"
               bgColor="Light"
               textColor="Black"

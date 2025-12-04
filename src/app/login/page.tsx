@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
@@ -19,7 +20,14 @@ export default function LoginPage() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirect") || "/user";
+  const redirectParam = searchParams.get("redirect") || "/user";
+  // Validate it's a relative path and not protocol-relative or absolute
+  const isValidRedirect =
+    typeof redirectParam === "string" &&
+    redirectParam.startsWith("/") &&
+    !redirectParam.startsWith("//") &&
+    !/^\/?(?:[a-zA-Z][a-zA-Z\d+\-.]*:)/.test(redirectParam); // no protocol
+  const redirectPath = isValidRedirect ? redirectParam : "/user";
   const registerHref = redirectPath
     ? `/register?redirect=${encodeURIComponent(redirectPath)}`
     : "/register";
@@ -48,7 +56,7 @@ export default function LoginPage() {
   return (
     <div className="h-screen flex justify-center bg-linear-to-b from-blue-400 to-slate-50">
       <div className="w-full flex flex-col justify-center items-center gap-4 max-w-sm">
-        <img src="/svipp.svg" alt="svipp logo" className="w-64 h-24" />
+        <Image src="/svipp.svg" alt="svipp logo" width={256} height={96} />
 
         {error && (
           <p className="text-red-600 text-sm text-center max-w-xs">{error}</p>
@@ -83,7 +91,10 @@ export default function LoginPage() {
 
           <Button
             type="button"
-            handleOnClick={() => console.log("Logging in with google...")}
+            handleOnClick={() => {
+              // TODO: Implement Google OAuth
+              console.log("Google OAuth not yet implemented");
+            }}
             text="Logg inn med Google"
             bgColor="Light"
             textColor="Black"
