@@ -36,7 +36,7 @@ export default async function UserPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white px-6">
         <div className="w-full max-w-sm text-center space-y-4">
-          <img src="/svipp.svg" alt="svipp logo" className="w-48 h-20 mx-auto" />
+          <Image src="/svipp.svg" alt="svipp logo" width={192} height={80} className="mx-auto" />
           <h1 className="text-2xl font-semibold text-gray-900">
             Du må logge inn
           </h1>

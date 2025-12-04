@@ -1,15 +1,36 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
 
-export function middleware(request: NextRequest) {
+async function validateSessionToken(token: string): Promise<boolean> {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    console.error("JWT_SECRET is not configured");
+    return false;
+  }
+  try {
+    const secret = new TextEncoder().encode(jwtSecret);
+    await jwtVerify(token, secret);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionCookie = request.cookies.get("session_token");
-  const isAuthenticated = Boolean(sessionCookie?.value);
+  let isAuthenticated = false;
+  if (sessionCookie?.value) {
+    isAuthenticated = await validateSessionToken(sessionCookie.value);
+  }
   const isAuthRoute = pathname === "/login" || pathname === "/register";
 
   if (isAuthRoute && isAuthenticated) {
+    const redirectParam = request.nextUrl.searchParams.get("redirect");
+    const targetPath = redirectParam || "/user";
     const homeUrl = request.nextUrl.clone();
-    homeUrl.pathname = "/user";
+    homeUrl.pathname = targetPath;
     homeUrl.search = "";
     return NextResponse.redirect(homeUrl);
   }
