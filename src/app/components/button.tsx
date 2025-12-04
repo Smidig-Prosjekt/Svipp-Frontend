@@ -12,6 +12,7 @@ type Props = {
     textColor: keyof typeof ButtonTextColorVariants;
     icon?: React.ReactNode;
     disabled?: boolean;
+    type?: "button" | "submit" | "reset";
 }
 
 const ButtonBgColorVariants = {
@@ -26,9 +27,9 @@ const ButtonTextColorVariants = {
     Black: "text-black"
 }
 
-export default function Button({ handleOnClick, text, bgColor, textColor, icon, disabled }: Props) {
+export default function Button({ handleOnClick, text, bgColor, textColor, icon, disabled, type = "submit" }: Props) {
     return (
-        <button onClick={handleOnClick} type="submit" disabled={disabled} className={`w-full h-10 rounded-sm font-medium flex items-center justify-center gap-4 ${ButtonBgColorVariants[bgColor]} ${ButtonTextColorVariants[textColor]}`}>
+        <button onClick={handleOnClick} type={type} disabled={disabled} className={`w-full h-10 rounded-sm font-medium flex items-center justify-center gap-4 ${ButtonBgColorVariants[bgColor]} ${ButtonTextColorVariants[textColor]}`}>
             {icon}
             {text}
         </button> 
