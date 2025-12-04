@@ -36,7 +36,7 @@ export default async function UserPage() {
   let isValidSession = false;
   if (sessionToken) {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/auth/validate-session`, {
+      const res = await fetch(`${process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || ""}/api/auth/validate-session`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,8 +48,9 @@ export default async function UserPage() {
         const data = await res.json();
         isValidSession = data.valid === true;
       }
-    } catch {
+    } catch (error) {
       // If validation fails or API is unavailable, we still reject access for security
+      console.error('Session validation failed:', error);
       isValidSession = false;
     }
   }
