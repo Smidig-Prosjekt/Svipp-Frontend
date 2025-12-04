@@ -1,14 +1,15 @@
 'use client'
 
-import { useRouter } from "next/navigation";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { User } from "../lib/types/user";
 import { sessionRequest } from "../lib/api";
 
 type AuthContextType = {
     user: User | null;
     isLoading: boolean;
+    error: string | null;
     setUser: (user: User) => void;
+    retrySession: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -24,26 +25,36 @@ export function useAuthSession() {
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const router = useRouter();
+    const [error, setError] = useState<string | null>(null);
 
-    console.log("user", user);
-    
-    useEffect(() => {
-        // Call the new `session` endpoint, if it doesn't fail, the user is authenticated, update
-        async function attemptLogin() {
-            try {
-                const response = await sessionRequest();
-                setUser(response);
-            } catch (error) {
-                router.push("/login");
-            }
+    const fetchSession = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await sessionRequest();
+            setUser(response);
+        } catch (err: unknown) {
+            // Middleware har allerede validert token, så feilen er sannsynligvis
+            // en midlertidig nettverksfeil eller API-problem
+            setUser(null);
+            setError(err instanceof Error ? err.message : "Kunne ikke hente brukerdata. Prøv å oppdatere siden.");
+        } finally {
             setIsLoading(false);
         }
-        attemptLogin();
-    }, [])
+    }, []);
+    
+    useEffect(() => {
+        fetchSession();
+    }, [fetchSession])
 
     return(
-        <AuthContext.Provider value={{ user: user, isLoading, setUser }}>
+        <AuthContext.Provider value={{ 
+            user, 
+            isLoading, 
+            error,
+            setUser,
+            retrySession: fetchSession
+        }}>
             {children}
         </AuthContext.Provider>
     )

@@ -77,9 +77,7 @@ export async function sessionRequest() {
     credentials: "include" // Include cookies in requests
   });
 
-  const data = await handleResponse<User>(res);
-
-  return data;
+  return handleResponse<User>(res);
 }
 
 export async function registerRequest(

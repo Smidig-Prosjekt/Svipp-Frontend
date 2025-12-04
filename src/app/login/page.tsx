@@ -20,6 +20,7 @@ export default function LoginPage() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { setUser } = useAuthSession();
   const redirectParam = searchParams.get("redirect") || "/user";
   const redirect = redirectParam.startsWith("/") && !redirectParam.startsWith("//")
     ? redirectParam
@@ -31,7 +32,11 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await loginRequest(email, password);
+      const response = await loginRequest(email, password);
+      // Oppdater AuthContext med brukeren
+      if (response.user) {
+        setUser(response.user);
+      }
       router.push(redirect);
     } catch (err: any) {
       setError(err.message ?? "Innlogging feilet");
