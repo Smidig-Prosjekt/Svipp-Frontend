@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import BottomNavbar from "../components/bottomNavbar";
 import Button from "../components/button";
 import TopNavbar from "../components/topNavbar";
@@ -27,7 +28,30 @@ function CarouselCard({ src, label }: CarouselItem) {
   );
 }
 
-export default function UserPage() {
+export default async function UserPage() {
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("session_token");
+
+  // Hvis session_token mangler, vis innloggingsside
+  if (!sessionToken) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-6 px-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-black text-center">
+            Du må logge inn
+          </h1>
+          <Link
+            href="/login?redirect=/user"
+            className="px-6 py-3 bg-[#3b9afb] text-white rounded-sm font-medium hover:bg-[#2a8aeb] transition-colors"
+          >
+            Logg inn
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Hvis brukeren er innlogget, vis normal side
   return (
     <div className="min-h-screen flex flex-col bg-black md:pt-16">
 

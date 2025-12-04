@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import Button from "../components/button";
@@ -18,14 +18,19 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/user";
 
-  const handleLogin = async () => {
+  const handleLogin = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     setError(null);
     setLoading(true);
 
     try {
       await loginRequest(email, password);
-      router.push("/user");
+      router.push(redirect);
     } catch (err: any) {
       setError(err.message ?? "Innlogging feilet");
     } finally {
@@ -42,31 +47,33 @@ export default function LoginPage() {
           <p className="text-red-600 text-sm text-center max-w-xs">{error}</p>
         )}
 
-        <InputField
-          title="E-post"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Skriv inn e-post"
-        />
+        <form onSubmit={handleLogin} className="w-full flex flex-col gap-4">
+          <InputField
+            title="E-post"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Skriv inn e-post"
+          />
 
-        <InputField
-          title="Passord"
-          type="password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="********"
-        />
+          <InputField
+            title="Passord"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="********"
+          />
 
-        <Button
-          handleOnClick={handleLogin}
-          text={loading ? "Logger inn..." : "Logg inn"}
-          bgColor="Primary"
-          textColor="White"
-          disabled={loading}
-        />
+          <Button
+            handleOnClick={handleLogin}
+            text={loading ? "Logger inn..." : "Logg inn"}
+            bgColor="Primary"
+            textColor="White"
+            disabled={loading}
+          />
+        </form>
 
         <Button
           handleOnClick={() => console.log("Logging in with google...")}
