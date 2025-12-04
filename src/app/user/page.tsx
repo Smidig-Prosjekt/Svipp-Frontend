@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import BottomNavbar from "../components/bottomNavbar";
 import Button from "../components/button";
 import TopNavbar from "../components/topNavbar";
@@ -27,7 +28,35 @@ function CarouselCard({ src, label }: CarouselItem) {
   );
 }
 
-export default function UserPage() {
+export default async function UserPage() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session_token");
+
+  if (!session?.value) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white px-6">
+        <div className="w-full max-w-sm text-center space-y-4">
+          <img src="/svipp.svg" alt="svipp logo" className="w-48 h-20 mx-auto" />
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Du må logge inn
+          </h1>
+          <p className="text-gray-600">
+            Denne siden er kun tilgjengelig for innloggede brukere. Logg inn for
+            å fortsette.
+          </p>
+          <Link href="/login?redirect=/user">
+            <Button
+              type="button"
+              text="Gå til innlogging"
+              bgColor="Primary"
+              textColor="White"
+            />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-black md:pt-16">
 

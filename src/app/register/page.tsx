@@ -12,7 +12,7 @@ import LeftArrowIconButton from "../components/leftArrowIconButton";
 import GoogleIcon from "../icons/googleIcon";
 import Link from "next/link";
 import { registerRequest } from "../lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function NewUserAccountPage() {
   const [firstName, setFirstName] = useState("");
@@ -25,6 +25,11 @@ export default function NewUserAccountPage() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirect");
+  const loginHref = redirectPath
+    ? `/login?redirect=${encodeURIComponent(redirectPath)}`
+    : "/login";
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -40,7 +45,7 @@ export default function NewUserAccountPage() {
     try {
       setLoading(true);
       await registerRequest(firstName, lastName, email, phoneNumber, password);
-      router.push("/login");
+      router.push(loginHref);
     } catch (err: any) {
       setError(err.message ?? "Registrering feilet");
     } finally {
@@ -152,7 +157,7 @@ export default function NewUserAccountPage() {
 
           <div className="pt-2">
             <Button
-              handleOnClick={() => {}}
+              type="submit"
               text={loading ? "Oppretter..." : "Opprett brukerkonto"}
               bgColor="Primary"
               textColor="White"
@@ -162,7 +167,8 @@ export default function NewUserAccountPage() {
 
           <div>
             <Button
-              handleOnClick={() => {}}
+              type="button"
+              handleOnClick={() => console.log("Fortsetter med Google...")}
               text="Fortsett med Google"
               bgColor="Light"
               textColor="Black"
@@ -173,7 +179,7 @@ export default function NewUserAccountPage() {
 
         <p className="mt-8 text-center text-sm text-gray-700">
           Allerede bruker?{" "}
-          <Link href="/login" className="text-blue-700 underline">
+          <Link href={loginHref} className="text-blue-700 underline">
             Logg inn
           </Link>
         </p>
