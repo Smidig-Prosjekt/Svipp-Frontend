@@ -21,7 +21,7 @@ async function validateSession(
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Cookie: `session_token=${sessionToken}`,
+        Cookie: `session_token=${encodeURIComponent(sessionToken)}`,
         // Forward original headers for bedre kompatibilitet
         "User-Agent": request.headers.get("user-agent") || "",
       },

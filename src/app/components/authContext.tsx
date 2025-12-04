@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { User } from "../lib/types/user";
 import { sessionRequest } from "../lib/api";
 
@@ -27,28 +27,25 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    console.log("user", user);
-    
-    const fetchSession = async () => {
+    const fetchSession = useCallback(async () => {
         setIsLoading(true);
         setError(null);
         try {
             const response = await sessionRequest();
             setUser(response);
-            setError(null);
-        } catch (err: any) {
+        } catch (err: unknown) {
             // Middleware har allerede validert token, så feilen er sannsynligvis
             // en midlertidig nettverksfeil eller API-problem
             setUser(null);
-            setError(err.message || "Kunne ikke hente brukerdata. Prøv å oppdatere siden.");
+            setError(err instanceof Error ? err.message : "Kunne ikke hente brukerdata. Prøv å oppdatere siden.");
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
     
     useEffect(() => {
         fetchSession();
-    }, [])
+    }, [fetchSession])
 
     return(
         <AuthContext.Provider value={{ 
