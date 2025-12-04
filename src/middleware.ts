@@ -30,12 +30,12 @@ async function validateSession(
 
     return response.ok;
   } catch (error) {
-    console.error("Session validation error in proxy:", error);
+    console.error("Session validation error in middleware:", error);
     return false;
   }
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionToken = request.cookies.get("session_token")?.value;
 
@@ -91,3 +91,4 @@ export const config = {
     "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
+
