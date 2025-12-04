@@ -1,5 +1,8 @@
 // For lokal utvikling går alle kall via Next.js sitt eget domene (localhost:3000),
 // og proxes videre til backend via rewrites i next.config.ts.
+
+import { User } from "./types/user";
+
 // I prod kan du evt. sette NEXT_PUBLIC_API_URL hvis API-et ligger på et annet domene.
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
@@ -58,9 +61,23 @@ export async function loginRequest(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   });
 
-  const data = await handleResponse<{ token?: string }>(res);
+  const data = await handleResponse<{ token?: string, user: User, expiresAt: string }>(res);
 
   // The server sets an HttpOnly cookie with the token.
+  return data;
+}
+
+export async function sessionRequest() {
+  const res = await fetch(`${API_URL}/api/auth/session`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include" // Include cookies in requests
+  });
+
+  const data = await handleResponse<User>(res);
+
   return data;
 }
 

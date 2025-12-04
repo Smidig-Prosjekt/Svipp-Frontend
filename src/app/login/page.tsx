@@ -6,8 +6,9 @@ import { useState } from "react";
 
 import Button from "../components/button";
 import InputField from "../components/inputField";
-import GoogleIcon from "../icons/googleIcon";
+import GoogleIcon from "../components/icons/googleIcon";
 import { loginRequest } from "../lib/api";
+import { useAuthSession } from "../components/authContext";
 
 // https://www.creative-tim.com/twcomponents/gradient-generator
 
