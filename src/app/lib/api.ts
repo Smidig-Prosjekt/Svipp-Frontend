@@ -39,10 +39,11 @@ function extractErrorMessage(data: ApiErrorPayload | undefined): string {
 }
 
 async function handleResponse<T>(res: Response): Promise<T> {
-  const data = (await res.json().catch(() => ({}))) as ApiErrorPayload | any;
+  const data = (await res.json().catch(() => ({}))) as unknown;
+  const errorPayload = data as ApiErrorPayload | undefined;
 
   if (!res.ok) {
-    throw new Error(extractErrorMessage(data));
+    throw new Error(extractErrorMessage(errorPayload));
   }
 
   return data as T;
@@ -89,4 +90,76 @@ export async function registerRequest(
   return handleResponse<{ token?: string }>(res);
 }
 
+export async function updateCustomerLocation(customerId: number, latitude: number, longitude: number) {
+  const res = await fetch(`${API_URL}/api/locations/customers/${customerId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ latitude, longitude }),
+  });
+
+  return handleResponse<{
+    customerId: number;
+    currentLatitude: number;
+    currentLongitude: number;
+    lastLocationUpdatedAt: string;
+  }>(res);
+}
+
+export type MockDriverDto = {
+  id: number;
+  name: string;
+  rating: number;
+  pricePerKm: number;
+  position: {
+    latitude: number;
+    longitude: number;
+  };
+};
+
+export async function fetchMockDrivers(latitude: number, longitude: number, count: number = 5) {
+  const params = new URLSearchParams({
+    latitude: latitude.toString(),
+    longitude: longitude.toString(),
+    count: count.toString(),
+  });
+
+  const base = API_URL || ""; // tom streng gir relative URL i dev
+  const res = await fetch(`${base}/api/locations/mock-drivers?${params.toString()}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  return handleResponse<MockDriverDto[]>(res);
+}
+
+export type RouteDto = {
+  distanceKm: number;
+  durationSeconds: number;
+  encodedPolyline: string;
+};
+
+export async function fetchRoute(
+  originLatitude: number,
+  originLongitude: number,
+  destinationLatitude: number,
+  destinationLongitude: number
+) {
+  const params = new URLSearchParams({
+    originLatitude: originLatitude.toString(),
+    originLongitude: originLongitude.toString(),
+    destinationLatitude: destinationLatitude.toString(),
+    destinationLongitude: destinationLongitude.toString(),
+  });
+
+  const base = API_URL || "";
+  const res = await fetch(`${base}/api/locations/route?${params.toString()}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  return handleResponse<RouteDto>(res);
+}
 
