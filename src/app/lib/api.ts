@@ -62,10 +62,29 @@ export async function loginRequest(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   });
 
-  const data = await handleResponse<{ token?: string, user: User, expiresAt: string }>(res);
+  const data = await handleResponse<{ token?: string, user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    createdAt: string;
+    updatedAt?: string;
+  }, expiresAt: string }>(res);
+
+  // Map backend UserResponse to frontend User type
+  const user: User = {
+    id: data.user.id,
+    firstName: data.user.firstName,
+    lastName: data.user.lastName,
+    email: data.user.email,
+    phoneNumber: data.user.phoneNumber,
+    createdAt: data.user.createdAt,
+    updatedAt: data.user.updatedAt,
+  };
 
   // The server sets an HttpOnly cookie with the token.
-  return data;
+  return { ...data, user };
 }
 
 export async function sessionRequest() {
@@ -77,9 +96,28 @@ export async function sessionRequest() {
     credentials: "include" // Include cookies in requests
   });
 
-  const data = await handleResponse<User>(res);
+  const data = await handleResponse<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    createdAt: string;
+    updatedAt?: string;
+  }>(res);
 
-  return data;
+  // Map backend UserResponse to frontend User type
+  const user: User = {
+    id: data.id,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    email: data.email,
+    phoneNumber: data.phoneNumber,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+
+  return user;
 }
 
 export async function registerRequest(

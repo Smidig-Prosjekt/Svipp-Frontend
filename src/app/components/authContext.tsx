@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { User } from "../lib/types/user";
 import { sessionRequest } from "../lib/api";
@@ -24,7 +23,6 @@ export function useAuthSession() {
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const router = useRouter();
 
     console.log("user", user);
     
@@ -35,7 +33,9 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
                 const response = await sessionRequest();
                 setUser(response);
             } catch (error) {
-                router.push("/login");
+                // Middleware håndterer redirect for beskyttede ruter
+                // Vi setter bare user til null for client-side state
+                setUser(null);
             }
             setIsLoading(false);
         }

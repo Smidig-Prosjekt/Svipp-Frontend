@@ -1,9 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import BottomNavbar from "../components/bottomNavbar";
 import Button from "../components/button";
 import TopNavbar from "../components/topNavbar";
+import { useAuthSession } from "../components/authContext";
 
 type CarouselItem = {
   src: string;
@@ -28,53 +30,30 @@ function CarouselCard({ src, label }: CarouselItem) {
   );
 }
 
-export default async function UserPage() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("session_token");
+export default function UserPage() {
+  const { user, isLoading } = useAuthSession();
 
-  // Validate session token with backend
-  let isValidSession = false;
-  if (sessionToken) {
-    try {
-      const res = await fetch(`${process.env.BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || ""}/api/auth/validate-session`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ sessionToken: sessionToken.value }),
-        cache: "no-store",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        isValidSession = data.valid === true;
-      }
-    } catch (error) {
-      // If validation fails or API is unavailable, we still reject access for security
-      console.error('Session validation failed:', error);
-      isValidSession = false;
-    }
-  }
-
-  // Hvis session_token mangler eller er ugyldig, vis innloggingsside
-  if (!sessionToken || !isValidSession) {
+  // Vis loading mens vi henter brukerdata (middleware har allerede validert autentisering)
+  if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-6 px-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-black text-center">
-            Du må logge inn
-          </h1>
-          <Link
-            href="/login?redirect=/user"
-            className="px-6 py-3 bg-[#3b9afb] text-white rounded-sm font-medium hover:bg-[#2a8aeb] transition-colors"
-          >
-            Logg inn
-          </Link>
-        </div>
+        <div className="text-gray-600">Laster...</div>
       </div>
     );
   }
 
-  // Hvis brukeren er innlogget, vis normal side
+  // Middleware har allerede sikret at brukeren er autentisert
+  // Men hvis user-data ikke er lastet ennå, vis loading
+  // (Dette skjer hvis sessionRequest feiler, men middleware har validert token)
+  if (!user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <div className="text-gray-600">Laster brukerdata...</div>
+      </div>
+    );
+  }
+
+  // Vis normal side
   return (
     <div className="min-h-screen flex flex-col bg-black md:pt-16">
 
