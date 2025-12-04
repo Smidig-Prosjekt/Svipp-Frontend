@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import LeftArrowIcon from "../icons/leftArrowIcon";
+import LeftArrowIcon from "./icons/leftArrowIcon";
 
 /* 
     How to use: 

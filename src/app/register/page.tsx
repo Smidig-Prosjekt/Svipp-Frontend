@@ -9,7 +9,7 @@ import { useState } from "react";
 import Button from "../components/button";
 import InputField from "../components/inputField";
 import LeftArrowIconButton from "../components/leftArrowIconButton";
-import GoogleIcon from "../icons/googleIcon";
+import GoogleIcon from "../components/icons/googleIcon";
 import Link from "next/link";
 import { registerRequest } from "../lib/api";
 import { useRouter } from "next/navigation";
