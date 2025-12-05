@@ -1,4 +1,4 @@
-/* 
+/*
     Ny brukerkonto-side
     Bruker eksisterende komponenter: Button, InputField, LeftArrowIconButton og GoogleIcon.
 */
@@ -13,6 +13,8 @@ import GoogleIcon from "../components/icons/googleIcon";
 import Link from "next/link";
 import { registerRequest } from "../lib/api";
 import { useRouter } from "next/navigation";
+import { registerSchema } from "../lib/validation";
+import { z } from "zod";
 
 export default function NewUserAccountPage() {
   const [firstName, setFirstName] = useState("");
@@ -22,6 +24,7 @@ export default function NewUserAccountPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -31,18 +34,45 @@ export default function NewUserAccountPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setFieldErrors({});
 
-    if (password !== confirmPassword) {
-      setError("Passordene matcher ikke");
-      return;
-    }
+    // Validate form data with Zod
+    const formData = {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      password,
+      confirmPassword,
+    };
 
     try {
+      const validatedData = registerSchema.parse(formData);
+
       setLoading(true);
-      await registerRequest(firstName, lastName, email, phoneNumber, password);
-      router.push("/");
-    } catch (err: any) {
-      setError(err.message ?? "Registrering feilet");
+      await registerRequest(
+        validatedData.firstName,
+        validatedData.lastName,
+        validatedData.email,
+        validatedData.phoneNumber,
+        validatedData.password
+      );
+      router.push("/login");
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        // Map Zod validation errors to field errors
+        const errors: Record<string, string> = {};
+        err.errors.forEach((error) => {
+          if (error.path[0]) {
+            errors[error.path[0].toString()] = error.message;
+          }
+        });
+        setFieldErrors(errors);
+      } else if (err instanceof Error) {
+        setError(err.message ?? "Registrering feilet");
+      } else {
+        setError("Registrering feilet");
+      }
     } finally {
       setLoading(false);
     }
@@ -72,7 +102,8 @@ export default function NewUserAccountPage() {
                 placeholder="John"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                required
+                error={fieldErrors.firstName}
+                name="firstName"
               />
             </div>
             <div className="flex-1">
@@ -82,7 +113,8 @@ export default function NewUserAccountPage() {
                 placeholder="Doe"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                required
+                error={fieldErrors.lastName}
+                name="lastName"
               />
             </div>
           </div>
@@ -94,20 +126,22 @@ export default function NewUserAccountPage() {
               placeholder="din@epost.no"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
+              error={fieldErrors.email}
+              name="email"
             />
           </div>
 
-      <div>
-        <InputField
-          title="Telefonnummer"
-          type="tel"
-          placeholder="+47 123 45 678"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          required
-        />
-      </div>
+          <div>
+            <InputField
+              title="Telefonnummer"
+              type="tel"
+              placeholder="12345678 eller +4712345678"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              error={fieldErrors.phoneNumber}
+              name="phoneNumber"
+            />
+          </div>
 
           <div className="space-y-1">
             <div className="relative">
@@ -117,7 +151,8 @@ export default function NewUserAccountPage() {
                 placeholder="********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
+                error={fieldErrors.password}
+                name="password"
               />
               <button
                 type="button"
@@ -127,7 +162,11 @@ export default function NewUserAccountPage() {
                 {showPassword ? "Skjul" : "Vis"}
               </button>
             </div>
-            <p className="text-xs text-gray-600 pl-1">Minimum 8 tegn</p>
+            {!fieldErrors.password && (
+              <p className="text-xs text-gray-600 pl-1">
+                Minimum 8 tegn, inkl. stor bokstav, liten bokstav og tall
+              </p>
+            )}
           </div>
 
           <div className="space-y-1">
@@ -138,7 +177,8 @@ export default function NewUserAccountPage() {
                 placeholder="********"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                required
+                error={fieldErrors.confirmPassword}
+                name="confirmPassword"
               />
               <button
                 type="button"
