@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Button from "../components/button";
 import InputField from "../components/inputField";
@@ -17,33 +17,39 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [redirect, setRedirect] = useState("/user"); // Default fallback
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setUser } = useAuthSession();
 
   // Validate redirect parameter to prevent open redirect attacks
-  const redirectParam = searchParams.get("redirect") || "/user";
-  let redirect = "/user"; // Default fallback
+  // This must run on the client side only (useEffect) since it accesses window
+  useEffect(() => {
+    const redirectParam = searchParams.get("redirect") || "/user";
+    let validatedRedirect = "/user"; // Default fallback
 
-  if (redirectParam) {
-    try {
-      // Parse as URL to validate it's a safe relative path
-      const url = new URL(redirectParam, window.location.origin);
+    if (redirectParam && typeof window !== "undefined") {
+      try {
+        // Parse as URL to validate it's a safe relative path
+        const url = new URL(redirectParam, window.location.origin);
 
-      // Only allow redirects to same origin
-      if (url.origin === window.location.origin) {
-        // Additional check: ensure pathname starts with / and doesn't contain backslashes
-        const pathname = url.pathname;
-        if (pathname.startsWith("/") && !pathname.includes("\\")) {
-          redirect = pathname + url.search + url.hash;
+        // Only allow redirects to same origin
+        if (url.origin === window.location.origin) {
+          // Additional check: ensure pathname starts with / and doesn't contain backslashes
+          const pathname = url.pathname;
+          if (pathname.startsWith("/") && !pathname.includes("\\")) {
+            validatedRedirect = pathname + url.search + url.hash;
+          }
         }
+      } catch {
+        // Invalid URL, use default
+        validatedRedirect = "/user";
       }
-    } catch {
-      // Invalid URL, use default
-      redirect = "/user";
     }
-  }
+
+    setRedirect(validatedRedirect);
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
