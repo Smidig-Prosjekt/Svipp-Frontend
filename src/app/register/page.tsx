@@ -213,7 +213,7 @@ export default function NewUserAccountPage() {
 
         <p className="mt-8 text-center text-sm text-gray-700">
           Allerede bruker?{" "}
-          <Link href="/login" className="text-blue-700 underline">
+          <Link href="/" className="text-blue-700 underline">
             Logg inn
           </Link>
         </p>

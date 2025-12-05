@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const protectedRoutes = ["/user"];
 
 // Offentlige ruter som ikke krever autentisering
-const publicRoutes = ["/login", "/register", "/"];
+const publicRoutes = ["/register", "/"];
 
 async function validateSession(
   sessionToken: string,
@@ -48,7 +48,7 @@ export async function proxy(request: NextRequest) {
   if (isProtectedRoute) {
     if (!sessionToken) {
       // Ingen token, redirect til login
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL("/", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
@@ -57,7 +57,7 @@ export async function proxy(request: NextRequest) {
     const isValid = await validateSession(sessionToken, request);
     if (!isValid) {
       // Ugyldig token, redirect til login
-      const loginUrl = new URL("/login", request.url);
+      const loginUrl = new URL("/", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       const response = NextResponse.redirect(loginUrl);
       // Fjern ugyldig cookie
