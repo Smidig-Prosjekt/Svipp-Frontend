@@ -8,7 +8,7 @@ type AuthContextType = {
     user: User | null;
     isLoading: boolean;
     error: string | null;
-    setUser: (user: User) => void;
+    setUser: (user: User | null) => void;
     retrySession: () => void;
 }
 
@@ -23,9 +23,17 @@ export function useAuthSession() {
 }
 
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUserState] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Wrapper function that clears error when setting user
+    const setUser = useCallback((user: User | null) => {
+        setUserState(user);
+        if (user) {
+            setError(null); // Clear any previous errors when user is set
+        }
+    }, []);
 
     const fetchSession = useCallback(async () => {
         setIsLoading(true);
@@ -41,16 +49,16 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
         } finally {
             setIsLoading(false);
         }
-    }, []);
-    
+    }, [setUser]);
+
     useEffect(() => {
         fetchSession();
     }, [fetchSession])
 
     return(
-        <AuthContext.Provider value={{ 
-            user, 
-            isLoading, 
+        <AuthContext.Provider value={{
+            user,
+            isLoading,
             error,
             setUser,
             retrySession: fetchSession
