@@ -9,6 +9,8 @@ import InputField from "../components/inputField";
 import GoogleIcon from "../components/icons/googleIcon";
 import { loginRequest } from "../lib/api";
 import { useAuthSession } from "../components/authContext";
+import { loginSchema } from "../lib/validation";
+import { z } from "zod";
 
 // https://www.creative-tim.com/twcomponents/gradient-generator
 
@@ -17,6 +19,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [redirect, setRedirect] = useState("/user"); // Default fallback
 
   const router = useRouter();
@@ -54,17 +57,39 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    setFieldErrors({});
+
+    // Validate form data with Zod
+    const formData = {
+      email,
+      password,
+    };
 
     try {
-      const response = await loginRequest(email, password);
+      const validatedData = loginSchema.parse(formData);
+
+      setLoading(true);
+      const response = await loginRequest(validatedData.email, validatedData.password);
       // Oppdater AuthContext med brukeren
       if (response.user) {
         setUser(response.user);
       }
       router.push(redirect);
-    } catch (err: any) {
-      setError(err.message ?? "Innlogging feilet");
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        // Map Zod validation errors to field errors
+        const errors: Record<string, string> = {};
+        err.errors.forEach((error) => {
+          if (error.path[0]) {
+            errors[error.path[0].toString()] = error.message;
+          }
+        });
+        setFieldErrors(errors);
+      } else if (err instanceof Error) {
+        setError(err.message ?? "Innlogging feilet");
+      } else {
+        setError("Innlogging feilet");
+      }
     } finally {
       setLoading(false);
     }
@@ -83,19 +108,21 @@ export default function LoginPage() {
           <InputField
             title="E-post"
             type="email"
-            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Skriv inn e-post"
+            error={fieldErrors.email}
+            name="email"
           />
 
           <InputField
             title="Passord"
             type="password"
-            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="********"
+            error={fieldErrors.password}
+            name="password"
           />
 
           <Button
