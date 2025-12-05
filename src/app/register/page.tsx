@@ -40,7 +40,7 @@ export default function NewUserAccountPage() {
     try {
       setLoading(true);
       await registerRequest(firstName, lastName, email, phoneNumber, password);
-      router.push("/login");
+      router.push("/");
     } catch (err: any) {
       setError(err.message ?? "Registrering feilet");
     } finally {
@@ -173,7 +173,7 @@ export default function NewUserAccountPage() {
 
         <p className="mt-8 text-center text-sm text-gray-700">
           Allerede bruker?{" "}
-          <Link href="/login" className="text-blue-700 underline">
+          <Link href="/" className="text-blue-700 underline">
             Logg inn
           </Link>
         </p>
