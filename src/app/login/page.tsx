@@ -21,10 +21,29 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setUser } = useAuthSession();
+
+  // Validate redirect parameter to prevent open redirect attacks
   const redirectParam = searchParams.get("redirect") || "/user";
-  const redirect = redirectParam.startsWith("/") && !redirectParam.startsWith("//")
-    ? redirectParam
-    : "/user";
+  let redirect = "/user"; // Default fallback
+
+  if (redirectParam) {
+    try {
+      // Parse as URL to validate it's a safe relative path
+      const url = new URL(redirectParam, window.location.origin);
+
+      // Only allow redirects to same origin
+      if (url.origin === window.location.origin) {
+        // Additional check: ensure pathname starts with / and doesn't contain backslashes
+        const pathname = url.pathname;
+        if (pathname.startsWith("/") && !pathname.includes("\\")) {
+          redirect = pathname + url.search + url.hash;
+        }
+      }
+    } catch {
+      // Invalid URL, use default
+      redirect = "/user";
+    }
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
